@@ -796,8 +796,10 @@ function setServos(n, value) {
 function setPwm(n, gpio, pwm) {
  let pcaId = hard.OUTPUTS[n].ADRESSE;
 
- if(pcaId == SYS.UNUSED)
-  gpioOutputs[n][gpio].pwmWrite(Math.abs(map(pwm, -100, 100, -255, 255)));
+ if(pcaId == SYS.UNUSED) {
+  let range = gpioOutputs[n][gpio].getPwmRange();
+  gpioOutputs[n][gpio].pwmWrite(Math.min(range, Math.abs(map(pwm, -100, 100, -range, range))));
+ }
  else
   pca9685Driver[pcaId].setDutyCycle(hard.OUTPUTS[n].GPIOS[gpio], Math.abs(pwm / 100));
 }
